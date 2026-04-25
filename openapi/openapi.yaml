@@ -1,0 +1,30 @@
+openapi: 3.1.0
+info:
+  title: Symptom Witch Internal API
+  version: 0.1.0
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: https://api.symptom-witch.internal
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness endpoint
+      security: []
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+        "401":
+          description: Unauthorized
