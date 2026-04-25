@@ -13,7 +13,7 @@ MVP foundation for Symptom Witch:
 2. Run API tests:
    - `cd api && ./gradlew test`
 3. Run web checks:
-   - `cd web && npm install && npm run lint && npm run test && npm run build`
+   - `cd web && cp .env.example .env && npm install && npm run lint && npm run test && npm run build`
 
 ## Lint and format
 

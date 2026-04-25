@@ -1,6 +1,8 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router'
 
 import { HomeRouteView } from '@/routes/home'
+import { PrivacyRouteView } from '@/routes/privacy'
+import { TermsRouteView } from '@/routes/terms'
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -12,7 +14,19 @@ const indexRoute = createRoute({
   component: HomeRouteView,
 })
 
-const routeTree = rootRoute.addChildren([indexRoute])
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/privacy',
+  component: PrivacyRouteView,
+})
+
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/terms',
+  component: TermsRouteView,
+})
+
+const routeTree = rootRoute.addChildren([indexRoute, privacyRoute, termsRoute])
 
 export const router = createRouter({ routeTree })
 
