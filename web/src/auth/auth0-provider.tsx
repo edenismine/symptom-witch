@@ -18,7 +18,10 @@ interface Auth0AppProviderProps {
   config?: Auth0RuntimeConfig
 }
 
-export function Auth0AppProvider({ children, config = getAuth0RuntimeConfig() }: Auth0AppProviderProps) {
+export function Auth0AppProvider({
+  children,
+  config = getAuth0RuntimeConfig(),
+}: Auth0AppProviderProps) {
   return (
     <Auth0Provider
       domain={config.domain}

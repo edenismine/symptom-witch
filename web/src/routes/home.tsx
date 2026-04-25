@@ -85,7 +85,10 @@ export function HomeRouteView() {
             >
               Sign up
             </Button>
-            <a className="text-sm text-muted-foreground underline underline-offset-2" href="/privacy">
+            <a
+              className="text-sm text-muted-foreground underline underline-offset-2"
+              href="/privacy"
+            >
               Privacy
             </a>
             <a className="text-sm text-muted-foreground underline underline-offset-2" href="/terms">
