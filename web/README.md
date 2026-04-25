@@ -24,8 +24,7 @@ Frontend for the Symptom Witch public landing and authenticated shell.
 
 ## Manual auth verification checklist
 
-- Logged out: `/` shows landing copy, `Log in`, `Sign up`, `Privacy`, and `Terms`
+- Logged out: `/` shows landing copy, `Log in`, `Privacy`, and `Terms`
 - `Log in` sends user through Auth0 and returns to `/` authenticated view
-- `Sign up` opens Auth0 Universal Login with signup intent
 - Authenticated: `/` shows shell with symptom draft form and `Sign out`
 - `Sign out` returns user to logged-out landing state

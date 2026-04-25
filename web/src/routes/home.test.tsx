@@ -45,12 +45,12 @@ describe('HomeRouteView', () => {
     expect(await screen.findByText('Symptom Witch shell is ready')).toBeInTheDocument()
     expect(screen.getByText('Track patterns before symptoms escalate.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Sign up' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Privacy' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Terms' })).toBeInTheDocument()
   })
 
-  it('starts login and signup with Auth0 redirect', async () => {
+  it('starts login with Auth0 redirect', async () => {
     const queryClient = new QueryClient()
 
     render(
@@ -63,11 +63,6 @@ describe('HomeRouteView', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
     expect(authState.loginWithRedirect).toHaveBeenCalledWith()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Sign up' }))
-    expect(authState.loginWithRedirect).toHaveBeenLastCalledWith({
-      authorizationParams: { screen_hint: 'signup' },
-    })
   })
 
   it('renders the shell and supports sign out for authenticated users', async () => {
@@ -83,7 +78,6 @@ describe('HomeRouteView', () => {
     expect(await screen.findByText('Symptom Witch shell is ready')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Log in' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Sign up' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Sign out' }))
     expect(authState.logout).toHaveBeenCalledWith({

@@ -74,17 +74,6 @@ export function HomeRouteView() {
             <Button type="button" onClick={() => void loginWithRedirect()}>
               Log in
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                void loginWithRedirect({
-                  authorizationParams: { screen_hint: 'signup' },
-                })
-              }
-            >
-              Sign up
-            </Button>
             <a
               className="text-sm text-muted-foreground underline underline-offset-2"
               href="/privacy"
