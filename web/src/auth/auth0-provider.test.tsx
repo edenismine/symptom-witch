@@ -14,9 +14,15 @@ vi.mock('@auth0/auth0-react', () => ({
 }))
 
 describe('Auth0AppProvider', () => {
-  it('configures Auth0Provider with refresh token support', () => {
+  it('configures Auth0Provider with refresh token support and persistent cache', () => {
     render(
-      <Auth0AppProvider config={{ domain: 'example.auth0.com', clientId: 'client-123' }}>
+      <Auth0AppProvider
+        config={{
+          domain: 'example.auth0.com',
+          clientId: 'client-123',
+          audience: 'https://api.symptomwitch.local',
+        }}
+      >
         <div>child</div>
       </Auth0AppProvider>,
     )
@@ -25,9 +31,12 @@ describe('Auth0AppProvider', () => {
       expect.objectContaining({
         domain: 'example.auth0.com',
         clientId: 'client-123',
-        cacheLocation: 'memory',
+        cacheLocation: 'localstorage',
         useRefreshTokens: true,
-        authorizationParams: { redirect_uri: window.location.origin },
+        authorizationParams: {
+          redirect_uri: window.location.origin,
+          audience: 'https://api.symptomwitch.local',
+        },
       }),
     )
   })
@@ -41,11 +50,13 @@ describe('Auth0AppProvider', () => {
       SSR: false,
       VITE_AUTH0_DOMAIN: 'tenant.auth0.com',
       VITE_AUTH0_CLIENT_ID: 'client-id',
+      VITE_AUTH0_AUDIENCE: 'https://api.symptomwitch.local',
     } as ImportMetaEnv)
 
     expect(config).toEqual({
       domain: 'tenant.auth0.com',
       clientId: 'client-id',
+      audience: 'https://api.symptomwitch.local',
     })
   })
 })

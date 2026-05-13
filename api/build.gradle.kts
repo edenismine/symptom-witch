@@ -22,6 +22,8 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -32,15 +34,14 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-    }
+    jvmToolchain(21)
 }
 
 tasks.withType<Test> {

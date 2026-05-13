@@ -9,6 +9,7 @@ Frontend for the Symptom Witch public landing and authenticated shell.
 2. Fill in Auth0 SPA values:
    - `VITE_AUTH0_DOMAIN`
    - `VITE_AUTH0_CLIENT_ID`
+   - `VITE_AUTH0_AUDIENCE` matching the Auth0 API identifier used by the backend
 3. In the Auth0 application settings, configure:
    - Allowed Callback URLs: `http://localhost:5173`
    - Allowed Logout URLs: `http://localhost:5173`

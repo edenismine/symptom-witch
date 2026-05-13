@@ -26,5 +26,33 @@ paths:
                   status:
                     type: string
                     enum: [ok]
+  /v1/me:
+    get:
+      operationId: getMe
+      summary: Current App User identity
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Authenticated App User identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
         "401":
           description: Unauthorized
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MeResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid

@@ -7,6 +7,7 @@ import { HomeRouteView } from '@/routes/home'
 const authState = vi.hoisted(() => {
   return {
     isAuthenticated: false,
+    isLoading: false,
     loginWithRedirect: vi.fn(),
     logout: vi.fn(),
   }
@@ -15,7 +16,7 @@ const authState = vi.hoisted(() => {
 vi.mock('@auth0/auth0-react', () => ({
   useAuth0: () => ({
     isAuthenticated: authState.isAuthenticated,
-    isLoading: false,
+    isLoading: authState.isLoading,
     loginWithRedirect: authState.loginWithRedirect,
     logout: authState.logout,
     user: undefined,
@@ -29,6 +30,7 @@ describe('HomeRouteView', () => {
 
   beforeEach(() => {
     authState.isAuthenticated = false
+    authState.isLoading = false
     authState.loginWithRedirect.mockReset()
     authState.logout.mockReset()
   })
@@ -63,6 +65,21 @@ describe('HomeRouteView', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
     expect(authState.loginWithRedirect).toHaveBeenCalledWith()
+  })
+
+  it('does not show logged-out actions while Auth0 restores the session', async () => {
+    authState.isLoading = true
+    const queryClient = new QueryClient()
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <HomeRouteView />
+      </QueryClientProvider>,
+    )
+
+    expect(await screen.findByText('Symptom Witch shell is ready')).toBeInTheDocument()
+    expect(screen.getByText('Checking your session...')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Log in' })).not.toBeInTheDocument()
   })
 
   it('renders the shell and supports sign out for authenticated users', async () => {

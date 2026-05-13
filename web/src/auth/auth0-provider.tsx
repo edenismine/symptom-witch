@@ -4,12 +4,14 @@ import type { ReactNode } from 'react'
 export interface Auth0RuntimeConfig {
   domain: string
   clientId: string
+  audience: string
 }
 
 export function getAuth0RuntimeConfig(env: ImportMetaEnv = import.meta.env): Auth0RuntimeConfig {
   return {
     domain: env.VITE_AUTH0_DOMAIN ?? '',
     clientId: env.VITE_AUTH0_CLIENT_ID ?? '',
+    audience: env.VITE_AUTH0_AUDIENCE ?? '',
   }
 }
 
@@ -26,9 +28,12 @@ export function Auth0AppProvider({
     <Auth0Provider
       domain={config.domain}
       clientId={config.clientId}
-      cacheLocation="memory"
+      cacheLocation="localstorage"
       useRefreshTokens={true}
-      authorizationParams={{ redirect_uri: window.location.origin }}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: config.audience,
+      }}
     >
       {children}
     </Auth0Provider>

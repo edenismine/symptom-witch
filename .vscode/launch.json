@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug API",
+      "type": "java",
+      "request": "attach",
+      "hostName": "127.0.0.1",
+      "port": 5005,
+      "preLaunchTask": "api:debug",
+      "postDebugTask": "api:stop",
+    },
+    {
+      "name": "Debug Web",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173/",
+      "webRoot": "${workspaceFolder}/web",
+      "preLaunchTask": "web:dev",
+      "postDebugTask": "web:stop"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": [
+        "Debug API",
+        "Debug Web"
+      ],
+      "stopAll": true
+    }
+  ]
+}

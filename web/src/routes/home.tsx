@@ -9,7 +9,7 @@ function fetchWelcomeMessage(): Promise<string> {
 }
 
 export function HomeRouteView() {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
+  const { isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0()
   const messageQuery = useQuery({
     queryKey: ['welcome-message'],
     queryFn: fetchWelcomeMessage,
@@ -29,7 +29,11 @@ export function HomeRouteView() {
         <p className="text-muted-foreground">{messageQuery.data ?? 'Loading app status...'}</p>
       </header>
 
-      {isAuthenticated ? (
+      {isLoading ? (
+        <section className="flex flex-col gap-4 rounded-lg border p-4">
+          <p className="text-sm text-muted-foreground">Checking your session...</p>
+        </section>
+      ) : isAuthenticated ? (
         <>
           <section className="flex items-center justify-end">
             <Button

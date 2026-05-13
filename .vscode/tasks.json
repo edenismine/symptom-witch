@@ -1,0 +1,89 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "db:up",
+      "type": "shell",
+      "command": "docker compose up -d postgres",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "db:down",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "api:debug",
+      "type": "shell",
+      "command": "bash -lc 'set -a; source .env; set +a; ./gradlew bootRun --debug-jvm'",
+      "dependsOn": [
+        "db:up"
+      ],
+      "dependsOrder": "sequence",
+      "options": {
+        "cwd": "${workspaceFolder}/api"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(___NO_TASK_PROBLEM___)\\s(.*)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*Task :bootRun.*",
+          "endsPattern": ".*Listening for transport dt_socket at address: 5005.*"
+        }
+      }
+    },
+    {
+      "label": "api:stop",
+      "type": "shell",
+      "command": "bash -lc 'lsof -tiTCP:5005 -sTCP:LISTEN | xargs -r kill; lsof -tiTCP:8080 -sTCP:LISTEN | xargs -r kill'",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "web:dev",
+      "type": "shell",
+      "command": "npm run dev -- --host 127.0.0.1",
+      "options": {
+        "cwd": "${workspaceFolder}/web"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(___NO_TASK_PROBLEM___)\\s(.*)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*vite.*",
+          "endsPattern": ".*Local:\\s+http://127\\.0\\.0\\.1:5173/?.*"
+        }
+      }
+    },
+    {
+      "label": "web:stop",
+      "type": "shell",
+      "command": "bash -lc 'lsof -tiTCP:5173 -sTCP:LISTEN | xargs -r kill'",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

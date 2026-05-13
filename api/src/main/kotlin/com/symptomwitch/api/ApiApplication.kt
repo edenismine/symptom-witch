@@ -1,11 +1,10 @@
 package com.symptomwitch.api
 
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
 
-@SpringBootApplication
-class ApiApplication
+@SpringBootApplication class ApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<ApiApplication>(*args)
+    SpringApplication.run(ApiApplication::class.java, *args)
 }
