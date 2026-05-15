@@ -7,8 +7,6 @@
       "request": "attach",
       "hostName": "127.0.0.1",
       "port": 5005,
-      "preLaunchTask": "api:debug",
-      "postDebugTask": "api:stop",
     },
     {
       "name": "Debug Web",
@@ -16,8 +14,6 @@
       "request": "launch",
       "url": "http://127.0.0.1:5173/",
       "webRoot": "${workspaceFolder}/web",
-      "preLaunchTask": "web:dev",
-      "postDebugTask": "web:stop"
     }
   ],
   "compounds": [

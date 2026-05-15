@@ -8,29 +8,33 @@ MVP foundation for Symptom Witch:
 
 ## Local setup
 
-1. Start PostgreSQL:
-   - `docker compose up -d`
-2. Configure API environment:
-   - `cd api && cp .env.example .env`
-   - Before running the API locally: `set -a; source .env; set +a`
-3. Run API tests:
-   - `cd api && ./gradlew test`
-4. Run web checks:
-   - `cd web && cp .env.example .env && npm install && npm run lint && npm run test && npm run build`
+Prerequisites: `just`, `overmind`, Docker.
 
-## Task runners and debug targets
+1. Configure API environment: `cd api && cp .env.example .env`
+2. Configure web environment: `cd web && cp .env.example .env && npm install`
+3. Start everything: `just dev`
 
-With Cursor/VS Code, use **Run Task**:
+`just dev` uses overmind to start PostgreSQL, the Spring Boot API (with JVM debug on port `5005`), and the Vite web app together. Logs are labeled per process; Ctrl+C cleanly shuts all three down.
 
-- `db:up` / `db:down`: start or stop PostgreSQL
-- `api:debug`: starts PostgreSQL, then starts the API with JVM debug attach on port `5005`
-- `web:dev`: starts the Vite app at `http://127.0.0.1:5173/`
+## Common tasks
 
-With **Run and Debug**:
+| Command                       | Description                         |
+| ----------------------------- | ----------------------------------- |
+| `just dev`                    | Start all services (db + api + web) |
+| `just db-up` / `just db-down` | Start or stop PostgreSQL only       |
+| `just api-dev`                | Run API standalone                  |
+| `just web-dev`                | Run web app standalone              |
+| `just test`                   | Run all tests                       |
+| `just lint`                   | Lint all                            |
+| `just format`                 | Format all                          |
 
-- `Debug API`: starts `api:debug`, then attaches to `127.0.0.1:5005`
+## Debugging in VS Code
+
+Run `just dev` first, then use **Run and Debug**:
+
+- `Debug API`: attaches to `127.0.0.1:5005`
 - `Debug Web`: launches Chrome against `http://127.0.0.1:5173/`
-- `Debug Full Stack`: starts both debug targets together
+- `Debug Full Stack`: attaches both together
 
 ## Lint and format
 
