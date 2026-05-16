@@ -1,4 +1,4 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.user
 
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.jdbc.core.JdbcTemplate

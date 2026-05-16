@@ -1,4 +1,4 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.infrastructure
 
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.jwt.Jwt

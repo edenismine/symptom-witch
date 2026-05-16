@@ -1,8 +1,11 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.symptom
 
+import com.symptomwitch.api.common.ApiResult
+import com.symptomwitch.api.common.DomainError
+import com.symptomwitch.api.common.DomainErrorException
+import com.symptomwitch.api.user.ResolvedAppUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,37 +27,32 @@ data class PatchSymptomRequest(
 @RestController
 @RequestMapping("/v1/symptoms")
 class SymptomController(
-    private val appUserService: AppUserService,
     private val symptomService: SymptomService,
 ) {
     @PostMapping
     fun create(
-        authentication: JwtAuthenticationToken,
+        @ResolvedAppUser appUserId: UUID,
         @RequestBody request: CreateSymptomRequest,
-    ): ResponseEntity<SymptomResponse> {
-        val appUserId = appUserService.findOrCreateByAuth0Subject(authentication.token.subject)
-        return when (val result = symptomService.create(appUserId, request.name)) {
+    ): ResponseEntity<SymptomResponse> =
+        when (val result = symptomService.create(appUserId, request.name)) {
             is ApiResult.Success -> ResponseEntity.status(HttpStatus.CREATED).body(result.data)
             is ApiResult.Failure -> throw DomainErrorException(result.error)
         }
-    }
 
     @GetMapping
-    fun listActive(authentication: JwtAuthenticationToken): List<SymptomResponse> {
-        val appUserId = appUserService.findOrCreateByAuth0Subject(authentication.token.subject)
-        return symptomService.listActive(appUserId)
-    }
+    fun listActive(
+        @ResolvedAppUser appUserId: UUID,
+    ): List<SymptomResponse> = symptomService.listActive(appUserId)
 
     @PatchMapping("/{id}")
     fun patch(
-        authentication: JwtAuthenticationToken,
+        @ResolvedAppUser appUserId: UUID,
         @PathVariable id: UUID,
         @RequestBody request: PatchSymptomRequest,
     ): SymptomResponse {
         if (request.name != null && request.archived != null) {
             throw DomainErrorException(DomainError.InvalidSymptomPatch)
         }
-        val appUserId = appUserService.findOrCreateByAuth0Subject(authentication.token.subject)
         val result =
             when {
                 request.name != null -> symptomService.rename(appUserId, id, request.name)

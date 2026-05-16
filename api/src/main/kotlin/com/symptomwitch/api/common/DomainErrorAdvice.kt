@@ -1,4 +1,4 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.common
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail

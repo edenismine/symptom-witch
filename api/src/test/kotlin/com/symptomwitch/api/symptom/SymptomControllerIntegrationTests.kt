@@ -1,5 +1,6 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.symptom
 
+import com.symptomwitch.api.TestcontainersConfiguration
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
@@ -237,23 +239,6 @@ class SymptomControllerIntegrationTests {
     }
 
     @Test
-    fun symptomNotFoundReturnsApplicationProblemJson() {
-        val nonExistentId = java.util.UUID.randomUUID()
-        mockMvc
-            .perform(
-                patch("/v1/symptoms/$nonExistentId")
-                    .header("Authorization", "Bearer valid-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("""{"archived":true}"""),
-            ).andExpect(status().isNotFound)
-            .andExpect(
-                org.springframework.test.web.servlet.result.MockMvcResultMatchers
-                    .content()
-                    .contentTypeCompatibleWith("application/problem+json"),
-            )
-    }
-
-    @Test
     fun postSymptomCreatesSymptomAndReturns201() {
         mockMvc
             .perform(
@@ -267,6 +252,21 @@ class SymptomControllerIntegrationTests {
             .andExpect(jsonPath("$.archived").value(false))
             .andExpect(jsonPath("$.createdAt").isString)
             .andExpect(jsonPath("$.updatedAt").isString)
+    }
+
+    @Test
+    fun symptomNotFoundReturnsApplicationProblemJson() {
+        val nonExistentId = java.util.UUID.randomUUID()
+        mockMvc
+            .perform(
+                patch("/v1/symptoms/$nonExistentId")
+                    .header("Authorization", "Bearer valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"archived":true}"""),
+            ).andExpect(status().isNotFound)
+            .andExpect(
+                content().contentTypeCompatibleWith("application/problem+json"),
+            )
     }
 }
 

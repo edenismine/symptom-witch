@@ -1,5 +1,7 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.symptom
 
+import com.symptomwitch.api.common.ApiResult
+import com.symptomwitch.api.common.DomainError
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper

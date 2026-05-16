@@ -1,6 +1,7 @@
-package com.symptomwitch.api
+package com.symptomwitch.api.user
 
 import com.jayway.jsonpath.JsonPath
+import com.symptomwitch.api.TestcontainersConfiguration
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.Test
