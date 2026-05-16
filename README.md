@@ -19,7 +19,7 @@ Prerequisites: `just`, `overmind`, Docker.
 ## Common tasks
 
 | Command                       | Description                         |
-| ----------------------------- | ----------------------------------- |
+|-------------------------------|-------------------------------------|
 | `just dev`                    | Start all services (db + api + web) |
 | `just db-up` / `just db-down` | Start or stop PostgreSQL only       |
 | `just api-dev`                | Run API standalone                  |
