@@ -35,7 +35,10 @@ export function HomeRouteView() {
         </section>
       ) : isAuthenticated ? (
         <>
-          <section className="flex items-center justify-end">
+          <section className="flex items-center justify-between">
+            <a className="text-sm font-medium underline underline-offset-2" href="/symptoms">
+              Manage symptoms
+            </a>
             <Button
               type="button"
               variant="outline"

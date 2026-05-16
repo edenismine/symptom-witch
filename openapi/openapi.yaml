@@ -41,6 +41,101 @@ paths:
                 $ref: "#/components/schemas/MeResponse"
         "401":
           description: Unauthorized
+  /v1/symptoms:
+    get:
+      operationId: listActiveSymptoms
+      summary: List active symptoms in alphabetical order
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Alphabetically sorted list of active symptoms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SymptomResponse"
+        "401":
+          description: Unauthorized
+    post:
+      operationId: createSymptom
+      summary: Create a new active symptom
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSymptomRequest"
+      responses:
+        "201":
+          description: Symptom created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymptomResponse"
+        "400":
+          description: Invalid name (empty, too long, or malformed)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "409":
+          description: An active symptom with that name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /v1/symptoms/{id}:
+    patch:
+      operationId: patchSymptom
+      summary: Rename, archive, or reactivate a symptom
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchSymptomRequest"
+      responses:
+        "200":
+          description: Updated symptom
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymptomResponse"
+        "400":
+          description: Invalid request (bad name, or name and archived both provided)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Symptom not found or does not belong to the caller
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: An active symptom with that name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:
@@ -56,3 +151,52 @@ components:
         id:
           type: string
           format: uuid
+    SymptomResponse:
+      type: object
+      required:
+        - id
+        - name
+        - archived
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+        archived:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateSymptomRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+    PatchSymptomRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+        archived:
+          type: boolean
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string

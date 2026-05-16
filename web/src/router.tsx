@@ -2,6 +2,7 @@ import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/re
 
 import { HomeRouteView } from '@/routes/home'
 import { PrivacyRouteView } from '@/routes/privacy'
+import { SymptomsRouteView } from '@/routes/symptoms'
 import { TermsRouteView } from '@/routes/terms'
 
 const rootRoute = createRootRoute({
@@ -26,7 +27,13 @@ const termsRoute = createRoute({
   component: TermsRouteView,
 })
 
-const routeTree = rootRoute.addChildren([indexRoute, privacyRoute, termsRoute])
+const symptomsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/symptoms',
+  component: SymptomsRouteView,
+})
+
+const routeTree = rootRoute.addChildren([indexRoute, symptomsRoute, privacyRoute, termsRoute])
 
 export const router = createRouter({ routeTree })
 

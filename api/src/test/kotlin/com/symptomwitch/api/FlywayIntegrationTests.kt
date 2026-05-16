@@ -23,4 +23,15 @@ class FlywayIntegrationTests {
 
         assertEquals(1, count)
     }
+
+    @Test
+    fun flywayRunsSymptomMigration() {
+        val count =
+            jdbcTemplate.queryForObject(
+                "select count(*) from information_schema.tables where table_name = 'symptom'",
+                Int::class.java,
+            )
+
+        assertEquals(1, count)
+    }
 }
