@@ -17,14 +17,6 @@ data class SymptomResponse(
     val updatedAt: Instant,
 )
 
-class SymptomNotFoundException : RuntimeException("Symptom not found")
-
-class DuplicateSymptomNameException : RuntimeException("An active symptom with that name already exists")
-
-class InvalidSymptomNameException(
-    message: String,
-) : RuntimeException(message)
-
 @Service
 class SymptomService(
     private val jdbcTemplate: JdbcTemplate,
@@ -33,9 +25,9 @@ class SymptomService(
     fun create(
         appUserId: UUID,
         displayName: String,
-    ): SymptomResponse {
+    ): ApiResult<SymptomResponse> {
         val trimmed = displayName.trim()
-        validate(trimmed)
+        validate(trimmed) ?: return ApiResult.Failure(DomainError.InvalidSymptomName("Symptom name must be between 1 and 40 characters"))
         val normalized = normalize(trimmed)
         val id = UUID.randomUUID()
         try {
@@ -50,9 +42,10 @@ class SymptomService(
                 normalized,
             )
         } catch (_: DuplicateKeyException) {
-            throw DuplicateSymptomNameException()
+            return ApiResult.Failure(DomainError.DuplicateSymptomName)
         }
-        return findById(appUserId, id) ?: throw IllegalStateException("Symptom not found after insert")
+        val symptom = findById(appUserId, id) ?: throw IllegalStateException("Symptom not found after insert")
+        return ApiResult.Success(symptom)
     }
 
     @Transactional
@@ -60,9 +53,9 @@ class SymptomService(
         appUserId: UUID,
         symptomId: UUID,
         newName: String,
-    ): SymptomResponse {
+    ): ApiResult<SymptomResponse> {
         val trimmed = newName.trim()
-        validate(trimmed)
+        validate(trimmed) ?: return ApiResult.Failure(DomainError.InvalidSymptomName("Symptom name must be between 1 and 40 characters"))
         val normalized = normalize(trimmed)
         val updated =
             try {
@@ -78,10 +71,11 @@ class SymptomService(
                     appUserId,
                 )
             } catch (_: DuplicateKeyException) {
-                throw DuplicateSymptomNameException()
+                return ApiResult.Failure(DomainError.DuplicateSymptomName)
             }
-        if (updated == 0) throw SymptomNotFoundException()
-        return findById(appUserId, symptomId) ?: throw SymptomNotFoundException()
+        if (updated == 0) return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        val symptom = findById(appUserId, symptomId) ?: return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        return ApiResult.Success(symptom)
     }
 
     fun listActive(appUserId: UUID): List<SymptomResponse> =
@@ -100,7 +94,7 @@ class SymptomService(
     fun archive(
         appUserId: UUID,
         symptomId: UUID,
-    ): SymptomResponse {
+    ): ApiResult<SymptomResponse> {
         val updated =
             jdbcTemplate.update(
                 """
@@ -111,15 +105,16 @@ class SymptomService(
                 symptomId,
                 appUserId,
             )
-        if (updated == 0) throw SymptomNotFoundException()
-        return findById(appUserId, symptomId) ?: throw SymptomNotFoundException()
+        if (updated == 0) return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        val symptom = findById(appUserId, symptomId) ?: return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        return ApiResult.Success(symptom)
     }
 
     @Transactional
     fun reactivate(
         appUserId: UUID,
         symptomId: UUID,
-    ): SymptomResponse {
+    ): ApiResult<SymptomResponse> {
         val updated =
             try {
                 jdbcTemplate.update(
@@ -132,10 +127,11 @@ class SymptomService(
                     appUserId,
                 )
             } catch (_: DuplicateKeyException) {
-                throw DuplicateSymptomNameException()
+                return ApiResult.Failure(DomainError.DuplicateSymptomName)
             }
-        if (updated == 0) throw SymptomNotFoundException()
-        return findById(appUserId, symptomId) ?: throw SymptomNotFoundException()
+        if (updated == 0) return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        val symptom = findById(appUserId, symptomId) ?: return ApiResult.Failure(DomainError.SymptomNotFound(symptomId))
+        return ApiResult.Success(symptom)
     }
 
     private fun findById(
@@ -154,11 +150,7 @@ class SymptomService(
                 appUserId,
             ).firstOrNull()
 
-    private fun validate(name: String) {
-        if (name.isEmpty() || name.length > 40) {
-            throw InvalidSymptomNameException("Symptom name must be between 1 and 40 characters")
-        }
-    }
+    private fun validate(name: String): Unit? = if (name.isEmpty() || name.length > 40) null else Unit
 
     private fun normalize(name: String): String = Normalizer.normalize(name, Normalizer.Form.NFC).lowercase()
 

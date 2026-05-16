@@ -26,3 +26,6 @@ pnpm-debug.log*
 # Python (for local scripts/tools)
 __pycache__/
 *.pyc
+
+# Scratch / ephemeral notes
+tmp/

@@ -30,24 +30,27 @@ class SymptomControllerIntegrationTests {
     @Test
     fun getActiveSymptomsSortedAlphabetically() {
         // isolated user so other tests don't pollute the list
-        mockMvc.perform(
-            post("/v1/symptoms")
-                .header("Authorization", "Bearer sort-test-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Nausea"}"""),
-        ).andExpect(status().isCreated)
-        mockMvc.perform(
-            post("/v1/symptoms")
-                .header("Authorization", "Bearer sort-test-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Anxiety"}"""),
-        ).andExpect(status().isCreated)
-        mockMvc.perform(
-            post("/v1/symptoms")
-                .header("Authorization", "Bearer sort-test-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Migraine"}"""),
-        ).andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/v1/symptoms")
+                    .header("Authorization", "Bearer sort-test-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Nausea"}"""),
+            ).andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/v1/symptoms")
+                    .header("Authorization", "Bearer sort-test-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Anxiety"}"""),
+            ).andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/v1/symptoms")
+                    .header("Authorization", "Bearer sort-test-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Migraine"}"""),
+            ).andExpect(status().isCreated)
 
         mockMvc
             .perform(get("/v1/symptoms").header("Authorization", "Bearer sort-test-token"))
@@ -67,17 +70,18 @@ class SymptomControllerIntegrationTests {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("""{"name":"$longName"}"""),
             ).andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.message").isString)
+            .andExpect(jsonPath("$.detail").isString)
     }
 
     @Test
     fun postSymptomRejectsDuplicateActiveName() {
-        mockMvc.perform(
-            post("/v1/symptoms")
-                .header("Authorization", "Bearer valid-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Fatigue"}"""),
-        ).andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/v1/symptoms")
+                    .header("Authorization", "Bearer valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Fatigue"}"""),
+            ).andExpect(status().isCreated)
 
         mockMvc
             .perform(
@@ -86,7 +90,7 @@ class SymptomControllerIntegrationTests {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("""{"name":"fatigue"}"""),
             ).andExpect(status().isConflict)
-            .andExpect(jsonPath("$.message").isString)
+            .andExpect(jsonPath("$.detail").isString)
     }
 
     @Test
@@ -102,7 +106,10 @@ class SymptomControllerIntegrationTests {
                 .andReturn()
                 .response
                 .contentAsString
-        val id = com.jayway.jsonpath.JsonPath.parse(created).read<String>("$.id")
+        val id =
+            com.jayway.jsonpath.JsonPath
+                .parse(created)
+                .read<String>("$.id")
 
         mockMvc
             .perform(
@@ -127,7 +134,10 @@ class SymptomControllerIntegrationTests {
                 ).andReturn()
                 .response
                 .contentAsString
-        val id = com.jayway.jsonpath.JsonPath.parse(created).read<String>("$.id")
+        val id =
+            com.jayway.jsonpath.JsonPath
+                .parse(created)
+                .read<String>("$.id")
 
         mockMvc
             .perform(
@@ -156,7 +166,10 @@ class SymptomControllerIntegrationTests {
                 ).andReturn()
                 .response
                 .contentAsString
-        val id = com.jayway.jsonpath.JsonPath.parse(created).read<String>("$.id")
+        val id =
+            com.jayway.jsonpath.JsonPath
+                .parse(created)
+                .read<String>("$.id")
 
         mockMvc.perform(
             patch("/v1/symptoms/$id")
@@ -193,7 +206,10 @@ class SymptomControllerIntegrationTests {
                 ).andReturn()
                 .response
                 .contentAsString
-        val id = com.jayway.jsonpath.JsonPath.parse(created).read<String>("$.id")
+        val id =
+            com.jayway.jsonpath.JsonPath
+                .parse(created)
+                .read<String>("$.id")
 
         mockMvc
             .perform(
@@ -206,17 +222,35 @@ class SymptomControllerIntegrationTests {
 
     @Test
     fun getDoesNotReturnOtherUsersSymptoms() {
-        mockMvc.perform(
-            post("/v1/symptoms")
-                .header("Authorization", "Bearer valid-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Cramps"}"""),
-        ).andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/v1/symptoms")
+                    .header("Authorization", "Bearer valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Cramps"}"""),
+            ).andExpect(status().isCreated)
 
         mockMvc
             .perform(get("/v1/symptoms").header("Authorization", "Bearer valid-token-user-2"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[?(@.name == 'Cramps')]").isEmpty)
+    }
+
+    @Test
+    fun symptomNotFoundReturnsApplicationProblemJson() {
+        val nonExistentId = java.util.UUID.randomUUID()
+        mockMvc
+            .perform(
+                patch("/v1/symptoms/$nonExistentId")
+                    .header("Authorization", "Bearer valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"archived":true}"""),
+            ).andExpect(status().isNotFound)
+            .andExpect(
+                org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                    .content()
+                    .contentTypeCompatibleWith("application/problem+json"),
+            )
     }
 
     @Test
