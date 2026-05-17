@@ -4,6 +4,9 @@ import com.symptomwitch.api.common.ApiResult
 import com.symptomwitch.api.common.DomainError
 import com.symptomwitch.api.common.DomainErrorException
 import com.symptomwitch.api.user.ResolvedAppUser
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,10 +19,13 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 data class CreateSymptomRequest(
+    @field:NotBlank
+    @field:Size(max = 40)
     val name: String,
 )
 
 data class PatchSymptomRequest(
+    @field:Size(max = 40)
     val name: String? = null,
     val archived: Boolean? = null,
 )
@@ -32,7 +38,7 @@ class SymptomController(
     @PostMapping
     fun create(
         @ResolvedAppUser appUserId: UUID,
-        @RequestBody request: CreateSymptomRequest,
+        @Valid @RequestBody request: CreateSymptomRequest,
     ): ResponseEntity<SymptomResponse> =
         when (val result = symptomService.create(appUserId, request.name)) {
             is ApiResult.Success -> ResponseEntity.status(HttpStatus.CREATED).body(result.data)
@@ -48,7 +54,7 @@ class SymptomController(
     fun patch(
         @ResolvedAppUser appUserId: UUID,
         @PathVariable id: UUID,
-        @RequestBody request: PatchSymptomRequest,
+        @Valid @RequestBody request: PatchSymptomRequest,
     ): SymptomResponse {
         if (request.name != null && request.archived != null) {
             throw DomainErrorException(DomainError.InvalidSymptomPatch)
