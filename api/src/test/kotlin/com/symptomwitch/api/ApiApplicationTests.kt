@@ -20,9 +20,9 @@ class ApiApplicationTests {
     @Test
     fun healthEndpointReturnsOk() {
         mockMvc
-            .perform(get("/health"))
+            .perform(get("/actuator/health"))
             .andExpect(status().isOk)
-            .andExpect(content().json("""{"status":"ok"}"""))
+            .andExpect(content().json("""{"status":"UP"}"""))
     }
 
     @Test
