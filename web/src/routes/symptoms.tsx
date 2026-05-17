@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { createSymptom, fetchActiveSymptoms, patchSymptom, type SymptomResponse } from '@/api/symptoms'
 import { Button } from '@/components/ui/button'
+import { queryKeys } from '@/lib/queryKeys'
 
 export function SymptomsRouteView() {
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0()
@@ -13,7 +14,7 @@ export function SymptomsRouteView() {
   const [renameValue, setRenameValue] = useState('')
 
   const symptomsQuery = useQuery({
-    queryKey: ['symptoms'],
+    queryKey: queryKeys.symptoms(),
     queryFn: async () => {
       const token = await getAccessTokenSilently()
       return fetchActiveSymptoms(token)
@@ -27,7 +28,7 @@ export function SymptomsRouteView() {
       return createSymptom(token, name)
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['symptoms'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.symptoms() })
       setNewName('')
     },
   })
@@ -38,7 +39,7 @@ export function SymptomsRouteView() {
       return patchSymptom(token, id, patch)
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['symptoms'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.symptoms() })
       setRenamingId(null)
     },
   })

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuth0 } from '@auth0/auth0-react'
 
 import { Button } from '@/components/ui/button'
+import { queryKeys } from '@/lib/queryKeys'
 
 function fetchWelcomeMessage(): Promise<string> {
   return Promise.resolve('Symptom Witch shell is ready')
@@ -11,7 +12,7 @@ function fetchWelcomeMessage(): Promise<string> {
 export function HomeRouteView() {
   const { isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0()
   const messageQuery = useQuery({
-    queryKey: ['welcome-message'],
+    queryKey: queryKeys.welcomeMessage(),
     queryFn: fetchWelcomeMessage,
   })
 

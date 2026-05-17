@@ -1,10 +1,17 @@
-export interface SymptomResponse {
-  id: string
-  name: string
-  archived: boolean
-  createdAt: string
-  updatedAt: string
-}
+import { z } from 'zod'
+
+import { apiFetch } from '@/api/client'
+export type { FetchError } from '@/api/client'
+
+const symptomResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  archived: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type SymptomResponse = z.infer<typeof symptomResponseSchema>
 
 export interface PatchSymptomRequest {
   name?: string
@@ -18,19 +25,19 @@ function authHeaders(token: string): HeadersInit {
 }
 
 export async function fetchActiveSymptoms(token: string): Promise<SymptomResponse[]> {
-  const res = await fetch(`${baseUrl}/v1/symptoms`, { headers: authHeaders(token) })
-  if (!res.ok) throw new Error('Failed to fetch symptoms')
-  return res.json() as Promise<SymptomResponse[]>
+  return apiFetch(
+    `${baseUrl}/v1/symptoms`,
+    { headers: authHeaders(token) },
+    z.array(symptomResponseSchema),
+  )
 }
 
 export async function createSymptom(token: string, name: string): Promise<SymptomResponse> {
-  const res = await fetch(`${baseUrl}/v1/symptoms`, {
-    method: 'POST',
-    headers: authHeaders(token),
-    body: JSON.stringify({ name }),
-  })
-  if (!res.ok) throw new Error('Failed to create symptom')
-  return res.json() as Promise<SymptomResponse>
+  return apiFetch(
+    `${baseUrl}/v1/symptoms`,
+    { method: 'POST', headers: authHeaders(token), body: JSON.stringify({ name }) },
+    symptomResponseSchema,
+  )
 }
 
 export async function patchSymptom(
@@ -38,11 +45,9 @@ export async function patchSymptom(
   id: string,
   patch: PatchSymptomRequest,
 ): Promise<SymptomResponse> {
-  const res = await fetch(`${baseUrl}/v1/symptoms/${id}`, {
-    method: 'PATCH',
-    headers: authHeaders(token),
-    body: JSON.stringify(patch),
-  })
-  if (!res.ok) throw new Error('Failed to update symptom')
-  return res.json() as Promise<SymptomResponse>
+  return apiFetch(
+    `${baseUrl}/v1/symptoms/${id}`,
+    { method: 'PATCH', headers: authHeaders(token), body: JSON.stringify(patch) },
+    symptomResponseSchema,
+  )
 }
