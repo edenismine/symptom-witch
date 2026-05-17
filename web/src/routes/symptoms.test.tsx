@@ -57,7 +57,9 @@ describe('SymptomsRouteView', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
     expect(await screen.findByText('Anxiety Disorder')).toBeInTheDocument()
-    expect(mockPatchSymptom).toHaveBeenCalledWith('test-token', 'id-a', { name: 'Anxiety Disorder' })
+    expect(mockPatchSymptom).toHaveBeenCalledWith('test-token', 'id-a', {
+      name: 'Anxiety Disorder',
+    })
   })
 
   it('archive button removes the symptom from the active list', async () => {
@@ -74,10 +76,14 @@ describe('SymptomsRouteView', () => {
   })
 
   it('add symptom form submits and the new symptom appears in the list', async () => {
-    const newSymptom = { id: 'id-new', name: 'Nausea', archived: false, createdAt: '', updatedAt: '' }
-    mockFetchActiveSymptoms
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([newSymptom])
+    const newSymptom = {
+      id: 'id-new',
+      name: 'Nausea',
+      archived: false,
+      createdAt: '',
+      updatedAt: '',
+    }
+    mockFetchActiveSymptoms.mockResolvedValueOnce([]).mockResolvedValueOnce([newSymptom])
     mockCreateSymptom.mockResolvedValueOnce(newSymptom)
 
     renderWithQueryClient(<SymptomsRouteView />)

@@ -2,7 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
 
-import { createSymptom, fetchActiveSymptoms, patchSymptom, type SymptomResponse } from '@/api/symptoms'
+import {
+  createSymptom,
+  fetchActiveSymptoms,
+  patchSymptom,
+  type SymptomResponse,
+} from '@/api/symptoms'
 import { Button } from '@/components/ui/button'
 import { queryKeys } from '@/lib/queryKeys'
 
@@ -34,7 +39,13 @@ export function SymptomsRouteView() {
   })
 
   const patchMutation = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Parameters<typeof patchSymptom>[2] }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string
+      patch: Parameters<typeof patchSymptom>[2]
+    }) => {
       const token = await getAccessTokenSilently()
       return patchSymptom(token, id, patch)
     },
@@ -144,7 +155,9 @@ export function SymptomsRouteView() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => patchMutation.mutate({ id: symptom.id, patch: { archived: true } })}
+                    onClick={() =>
+                      patchMutation.mutate({ id: symptom.id, patch: { archived: true } })
+                    }
                     disabled={patchMutation.isPending}
                   >
                     Archive
