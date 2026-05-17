@@ -67,7 +67,7 @@ describe('apiFetch', () => {
 
     const error = await apiFetch('/things', {}, thingSchema).catch((e: unknown) => e)
 
-    expect(error).toMatchObject<FetchError>({ kind: 'invalid-response' })
+    expect(error).toMatchObject({ kind: 'invalid-response' })
   })
 
   it('returns parsed response when body matches schema', async () => {
